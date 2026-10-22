@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>YouTube Mobile</title>
+
+  <!-- PWA / Android -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- iOS (Safari respeta estas metas aunque el origen sea HTTP) -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="YouTube">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+
+  <script>
+    // Si la app se abre desde el icono de la pantalla de inicio, salta a YouTube al instante.
+    // Si se abre en una pestaña normal del navegador (fase de instalación), muestra la guía.
+    (function () {
+      var TARGET = 'https://m.youtube.com/';
+      var standalone =
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.matchMedia('(display-mode: fullscreen)').matches ||
+        window.matchMedia('(display-mode: minimal-ui)').matches ||
+        window.navigator.standalone === true ||
+        /[?&]source=pwa\b/.test(location.search);
+      var forced = /[?&]go\b/.test(location.search);
+      if (standalone || forced) {
+        location.replace(TARGET);
+      }
+    })();
+  </script>
+
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 24px 16px;
+      background: #0f0f0f; color: #f1f1f1;
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      display: flex; justify-content: center;
+    }
+    main { width: 100%; max-width: 480px; }
+    header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    header img { width: 56px; height: 56px; border-radius: 14px; }
+    h1 { font-size: 22px; margin: 0; }
+    p.sub { margin: 2px 0 0; color: #aaa; font-size: 14px; }
+    .card { background: #1f1f1f; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+    .card h2 { font-size: 16px; margin: 0 0 8px; }
+    ol { margin: 0; padding-left: 20px; }
+    li { margin: 4px 0; }
+    button, a.btn {
+      display: block; width: 100%; padding: 14px; border: 0; border-radius: 12px;
+      font-size: 16px; font-weight: 600; text-align: center; text-decoration: none; cursor: pointer;
+    }
+    #install { background: #ff0033; color: #fff; margin-bottom: 10px; }
+    #install[hidden] { display: none; }
+    a.btn { background: #303030; color: #f1f1f1; }
+    .note { color: #aaa; font-size: 13px; }
+    code { background: #303030; padding: 1px 6px; border-radius: 6px; font-size: 13px; }
+    .hide { display: none; }
+    .warn { border: 1px solid #b38600; }
+    .ok { border: 1px solid #2e7d32; }
+    button.mini { display: inline; width: auto; padding: 2px 10px; font-size: 13px; background: #3ea6ff; color: #000; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <img src="icons/icon-192.png" alt="">
+      <div>
+        <h1>YouTube Mobile</h1>
+        <p class="sub">Instala este acceso en tu pantalla de inicio</p>
+      </div>
+    </header>
+
+    <button id="install" hidden>Instalar app</button>
+
+    <div class="card warn hide" id="insecure">
+      <h2>Paso previo en Android (30 s)</h2>
+      <p class="note" style="margin:0 0 8px">
+        Sin este paso el icono dependería del PC. Con él, la app queda guardada en el móvil.
+      </p>
+      <ol>
+        <li>Abre una pestaña nueva con <code>chrome://flags/#unsafely-treat-insecure-origin-as-secure</code></li>
+        <li>Pega esta dirección en el cuadro y pon el ajuste en <b>Enabled</b>:<br>
+          <code id="origin"></code> <button class="mini" id="copy">Copiar</button></li>
+        <li>Pulsa <b>Relaunch</b> y vuelve a abrir esta página.</li>
+      </ol>
+    </div>
+
+    <div class="card ok hide" id="secure">
+      <p class="note" style="margin:0">✓ Página lista para instalarse sin depender del PC.</p>
+    </div>
+
+    <div class="card" id="android">
+      <h2>Android (Chrome / Brave / Edge)</h2>
+      <ol>
+        <li>Pulsa el menú <b>⋮</b> del navegador.</li>
+        <li>Elige <b>Añadir a pantalla de inicio</b> o <b>Instalar aplicación</b>.</li>
+        <li>Abre la app desde el nuevo icono.</li>
+      </ol>
+    </div>
+
+    <div class="card" id="ios">
+      <h2>iPhone / iPad (Safari)</h2>
+      <ol>
+        <li>Pulsa el botón <b>Compartir</b> (cuadrado con flecha).</li>
+        <li>Elige <b>Añadir a pantalla de inicio</b>.</li>
+        <li>Abre la app desde el nuevo icono.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <p class="note" style="margin:0">
+        Una vez añadida, la app no depende de este PC: puedes cerrar el instalador.
+        La sesión de Google se guarda en el propio navegador del móvil.
+      </p>
+    </div>
+
+    <a class="btn" href="?go">Abrir YouTube ahora</a>
+
+    <div class="card" id="planb" style="margin-top:14px">
+      <h2>Plan B (iPhone, o si no quieres tocar flags)</h2>
+      <p class="note" style="margin:0 0 10px">
+        Abre m.youtube.com directamente y usa allí <b>Añadir a pantalla de inicio</b>.
+        El icono resultante no depende de este PC en ningún caso.
+      </p>
+      <a class="btn" href="https://m.youtube.com/" target="_blank" rel="noopener">Abrir m.youtube.com</a>
+    </div>
+  </main>
+
+  <script>
+    // Muestra solo las instrucciones de la plataforma detectada.
+    var ua = navigator.userAgent;
+    var isIOS = /iPhone|iPad|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    document.getElementById(isIOS ? 'android' : 'ios').classList.add('hide');
+
+    // En HTTP por IP de la LAN no hay service worker: el icono dependería del PC.
+    // En Android se soluciona con un flag de Chrome; en iOS no existe equivalente (usar Plan B).
+    if (window.isSecureContext) {
+      document.getElementById('secure').classList.remove('hide');
+    } else if (!isIOS) {
+      document.getElementById('insecure').classList.remove('hide');
+      document.getElementById('origin').textContent = location.origin;
+      document.getElementById('copy').addEventListener('click', function () {
+        var done = function () { this.textContent = 'Copiado'; }.bind(this);
+        if (navigator.clipboard) navigator.clipboard.writeText(location.origin).then(done, function () {});
+        else {
+          var r = document.createRange(); r.selectNodeContents(document.getElementById('origin'));
+          var s = getSelection(); s.removeAllRanges(); s.addRange(r);
+          document.execCommand('copy'); done();
+        }
+      });
+    }
+
+    // Botón de instalación nativo (solo en contextos seguros donde Chrome lo ofrece).
+    var deferred = null;
+    var btn = document.getElementById('install');
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferred = e;
+      btn.hidden = false;
+    });
+    btn.addEventListener('click', function () {
+      if (!deferred) return;
+      deferred.prompt();
+      deferred.userChoice.finally(function () { deferred = null; btn.hidden = true; });
+    });
+
+    // El service worker solo se registra en HTTPS o localhost; en HTTP por IP se omite sin error.
+    if ('serviceWorker' in navigator && window.isSecureContext) {
+      navigator.serviceWorker.register('sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>
